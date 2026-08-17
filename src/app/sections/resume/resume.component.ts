@@ -1,75 +1,71 @@
 import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import { PORTFOLIO } from '../../core/portfolio.constants';
-import { SectionTitleComponent } from '../../shared/components/section-title/section-title.component';
 import { ScrollFadeDirective } from '../../shared/directives/scroll-fade.directive';
 import { ButtonComponent } from '../../shared/components/button/button.component';
-import { CardComponent } from '../../shared/components/card/card.component';
 import { NgIcon } from '@ng-icons/core';
-import { trigger, transition, style, animate } from '@angular/animations';
+import { fadeInUp } from '../../shared/animations/animations';
 
 @Component({
   selector: 'app-resume',
   standalone: true,
-  imports: [SectionTitleComponent, ScrollFadeDirective, ButtonComponent, CardComponent, NgIcon],
+  imports: [ScrollFadeDirective, ButtonComponent, NgIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [
-    trigger('fadeInUp', [
-      transition('void => visible', [
-        style({ opacity: 0, transform: 'translateY(24px)' }),
-        animate('600ms cubic-bezier(0.16, 1, 0.3, 1)', style({ opacity: 1, transform: 'translateY(0)' }))
-      ])
-    ])
-  ],
+  animations: [fadeInUp],
+  styles: [`
+    .resume-card {
+      background: linear-gradient(135deg, var(--color-bg-elevated) 0%, rgba(59, 130, 246, 0.05) 100%);
+    }
+  `],
   template: `
     <section
       id="resume"
-      class="py-20 bg-secondary"
+      class="section-shell-sm bg-bg-base"
       appScrollFade
       (visible)="animateState.set('visible')"
-      [@fadeInUp]="animateState()"
     >
-      <div class="mx-auto max-w-4xl px-6">
-        <app-section-title title="Resume & CV" subtitle="Download my full credentials or connect directly" />
+      <div class="portfolio-container">
+        <div
+          class="resume-card mx-auto max-w-[720px] rounded-[24px] border border-border-glow px-6 py-12 text-center md:px-12 md:py-14"
+          [@fadeInUp]="animateState()"
+        >
+          <p class="mb-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-accent">
+            Resume
+          </p>
+          <h2 class="font-display text-[32px] font-bold leading-tight text-text-primary">
+            Ready to contribute from day one.
+          </h2>
+          <p class="mx-auto mt-4 max-w-[480px] text-[16px] leading-7 text-text-secondary">
+            Download my CV for the full project details, education, certificates, and backend engineering background.
+          </p>
 
-        <div class="max-w-2xl mx-auto">
-          <app-card>
-            <div class="text-center py-6">
-              <h3 class="text-2xl font-bold text-heading mb-3">Want to know more?</h3>
-              <p class="text-muted text-sm md:text-base mb-8 max-w-md mx-auto">
-                Download my comprehensive CV to see details on projects, education, certificates, and methodologies.
-              </p>
+          <div class="mt-8">
+            <app-button
+              variant="primary"
+              size="lg"
+              [href]="portfolio.cvUrl"
+              icon="heroArrowDown"
+              iconPosition="right"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Download CV
+            </app-button>
+          </div>
 
-              <app-button
-                variant="primary"
-                [href]="portfolio.cvUrl"
-                icon="heroArrowDown"
-                iconPosition="right"
-                class="mb-10"
+          <div class="mt-8 flex flex-wrap items-center justify-center gap-8">
+            @for (link of portfolio.socialLinks; track link.label) {
+              <a
+                [href]="link.href"
+                class="flex items-center gap-2 text-[14px] font-medium text-text-muted transition-colors hover:text-text-primary"
+                [attr.aria-label]="link.label"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Download CV
-              </app-button>
-
-              <div class="border-t border-border pt-8 mt-6">
-                <h4 class="text-xs font-mono font-semibold tracking-wider text-muted uppercase mb-4">Connect Directly</h4>
-                <div class="flex flex-wrap items-center justify-center gap-6">
-                  @for (link of portfolio.socialLinks; track link.label) {
-                    <a
-                      [href]="link.href"
-                      class="flex items-center gap-2 text-sm font-medium text-muted hover:text-primary transition-colors cursor-pointer"
-                      [attr.aria-label]="link.label"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <ng-icon [name]="link.icon" size="18" />
-                      {{ link.label }}
-                    </a>
-                  }
-                </div>
-              </div>
-            </div>
-          </app-card>
+                <ng-icon [name]="link.icon" size="18" />
+                {{ link.label }}
+              </a>
+            }
+          </div>
         </div>
       </div>
     </section>

@@ -5,49 +5,80 @@ import { ScrollFadeDirective } from '../../shared/directives/scroll-fade.directi
 import { CardComponent } from '../../shared/components/card/card.component';
 import { TagComponent } from '../../shared/components/tag/tag.component';
 import { NgIcon } from '@ng-icons/core';
-import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-skills',
   standalone: true,
   imports: [SectionTitleComponent, ScrollFadeDirective, CardComponent, TagComponent, NgIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [
-    trigger('fadeInUp', [
-      transition('void => visible', [
-        style({ opacity: 0, transform: 'translateY(24px)' }),
-        animate('600ms cubic-bezier(0.16, 1, 0.3, 1)', style({ opacity: 1, transform: 'translateY(0)' }))
-      ])
-    ])
-  ],
+  styles: [`
+    .skill-card {
+      opacity: 0;
+      transform: translateY(20px);
+      transition:
+        opacity var(--dur-slow) var(--ease-out-quart),
+        transform var(--dur-slow) var(--ease-out-quart);
+    }
+
+    .skills-visible .skill-card {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .skill-card:nth-child(2) {
+      transition-delay: 80ms;
+    }
+
+    .skill-card:nth-child(3) {
+      transition-delay: 160ms;
+    }
+
+    .skill-card:nth-child(4) {
+      transition-delay: 240ms;
+    }
+
+    .skill-card:nth-child(5) {
+      transition-delay: 320ms;
+    }
+
+    .skill-card:nth-child(6) {
+      transition-delay: 400ms;
+    }
+  `],
   template: `
     <section
       id="skills"
-      class="py-20 bg-surface"
+      class="section-shell bg-bg-subtle"
       appScrollFade
-      (visible)="animateState.set('visible')"
-      [@fadeInUp]="animateState()"
+      (visible)="visible.set(true)"
     >
-      <div class="mx-auto max-w-6xl px-6">
-        <app-section-title title="Technical Skills" subtitle="My backend engineering toolkit and proficiency levels" />
+      <div class="portfolio-container" [class.skills-visible]="visible()">
+        <app-section-title
+          eyebrow="Technical Skills"
+          title="What I Work With"
+          subtitle="A focused backend toolkit shaped around scalable APIs, data consistency, and maintainable delivery."
+        />
 
-        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           @for (cat of portfolio.skills; track cat.category) {
-            <app-card>
-              <div class="flex items-center gap-3 mb-4 pb-3 border-b border-border">
-                <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <ng-icon [name]="cat.icon" size="20" />
-                </span>
-                <h3 class="text-base font-bold text-heading">
-                  {{ cat.category }}
-                </h3>
-              </div>
-              <div class="flex flex-wrap gap-2">
-                @for (item of cat.items; track item) {
-                  <app-tag>{{ item }}</app-tag>
-                }
-              </div>
-            </app-card>
+            <div class="skill-card">
+              <app-card>
+                <div class="mb-5 flex items-center gap-3">
+                  <span class="flex h-10 w-10 items-center justify-center rounded-[10px] bg-bg-subtle text-accent">
+                    <ng-icon [name]="cat.icon" size="20" />
+                  </span>
+                  <h3 class="text-[16px] font-semibold text-text-primary">
+                    {{ cat.category }}
+                  </h3>
+                </div>
+
+                <div class="flex flex-wrap gap-2">
+                  @for (item of cat.items; track item) {
+                    <app-tag>{{ item }}</app-tag>
+                  }
+                </div>
+              </app-card>
+            </div>
           }
         </div>
       </div>
@@ -56,5 +87,5 @@ import { trigger, transition, style, animate } from '@angular/animations';
 })
 export class SkillsComponent {
   protected readonly portfolio = PORTFOLIO;
-  protected animateState = signal('void');
+  protected visible = signal(false);
 }

@@ -3,113 +3,100 @@ import { Project } from '../../../core/types';
 import { TagComponent } from '../tag/tag.component';
 import { ButtonComponent } from '../button/button.component';
 import { NgIcon } from '@ng-icons/core';
-import { trigger, transition, style, animate } from '@angular/animations';
+import { fadeIn, modalAnimation } from '../../animations/animations';
 
 @Component({
   selector: 'app-project-modal',
   standalone: true,
   imports: [TagComponent, ButtonComponent, NgIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [
-    trigger('modalTransition', [
-      transition(':enter', [
-        style({ opacity: 0 }),
-        animate('250ms ease-out', style({ opacity: 1 }))
-      ]),
-      transition(':leave', [
-        animate('200ms ease-in', style({ opacity: 0 }))
-      ])
-    ]),
-    trigger('contentTransition', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'scale(0.95) translateY(8px)' }),
-        animate('300ms cubic-bezier(0.16, 1, 0.3, 1)', style({ opacity: 1, transform: 'scale(1) translateY(0)' }))
-      ]),
-      transition(':leave', [
-        animate('200ms ease-in', style({ opacity: 0, transform: 'scale(0.95) translateY(8px)' }))
-      ])
-    ])
-  ],
+  animations: [fadeIn, modalAnimation],
+  styles: [`
+    .modal-backdrop {
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+    }
+  `],
   template: `
     <div
       class="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6"
       role="dialog"
       aria-modal="true"
-      [attr.aria-labelledby]="project?.name"
-      @modalTransition
+      [attr.aria-label]="project?.name"
     >
-      <!-- Backdrop -->
-      <div
-        class="fixed inset-0 bg-secondary/60 backdrop-blur-xs"
+      <button
+        type="button"
+        class="modal-backdrop fixed inset-0"
+        aria-label="Close modal backdrop"
         (click)="close.emit()"
-      ></div>
+        @fadeIn
+      ></button>
 
-      <!-- Modal Content -->
       <div
         #modalContainer
-        class="relative w-full max-w-2xl overflow-y-auto max-h-[90vh] rounded-2xl border border-border bg-[#0F172A] shadow-2xl transition-all"
-        @contentTransition
+        class="relative max-h-[90vh] w-full max-w-[680px] overflow-y-auto rounded-[24px] border border-border bg-bg-elevated p-8 shadow-2xl md:p-10"
+        @modalAnimation
       >
         <button
           #closeButton
           type="button"
-          class="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-surface text-muted hover:text-heading hover:bg-border/50 focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer"
+          class="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full bg-bg-subtle text-text-secondary transition-colors hover:bg-bg-hover hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-border-glow"
           aria-label="Close modal"
           (click)="close.emit()"
         >
           <ng-icon name="heroXMark" size="18" />
         </button>
 
-        <div class="p-6 md:p-8">
-          <div class="mb-4">
-            <span class="text-xs font-mono font-semibold tracking-wider text-primary uppercase">Project Details</span>
-            <h3 class="mt-1 text-2xl font-bold text-heading md:text-3xl">
-              {{ project?.name }}
-            </h3>
-          </div>
-
-          <p class="mb-6 text-sm leading-relaxed text-muted md:text-base">
-            {{ project?.longDescription }}
+        <div class="pr-10">
+          <p class="mb-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-accent">
+            Project Details
           </p>
+          <h3 class="text-[32px] font-bold leading-tight text-text-primary">
+            {{ project?.name }}
+          </h3>
+        </div>
 
-          @if (project?.highlights?.length) {
-            <div class="mb-6">
-              <h4 class="mb-2.5 text-xs font-mono font-semibold tracking-wider text-muted uppercase">Key Highlights</h4>
-              <ul class="space-y-2">
-                @for (hl of project?.highlights; track hl) {
-                  <li class="flex items-start gap-2.5 text-sm text-muted">
-                    <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/65"></span>
-                    <span>{{ hl }}</span>
-                  </li>
-                }
-              </ul>
-            </div>
-          }
+        <p class="mt-6 text-[16px] leading-8 text-text-secondary">
+          {{ project?.longDescription }}
+        </p>
 
-          <div class="mb-6">
-            <h4 class="mb-2.5 text-xs font-mono font-semibold tracking-wider text-muted uppercase">Technologies</h4>
-            <div class="flex flex-wrap gap-2">
-              @for (tech of project?.tech; track tech) {
-                <app-tag>{{ tech }}</app-tag>
+        @if (project?.highlights?.length) {
+          <div class="mt-8">
+            <h4 class="mb-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-text-muted">Key Highlights</h4>
+            <ul class="space-y-3">
+              @for (hl of project?.highlights; track hl) {
+                <li class="flex items-start gap-3 text-[14px] leading-6 text-text-secondary">
+                  <span class="mt-0.5 text-accent">▸</span>
+                  <span>{{ hl }}</span>
+                </li>
               }
-            </div>
+            </ul>
           </div>
+        }
 
-          <div class="flex items-center gap-3">
-            @if (project?.github) {
-              <app-button
-                variant="outline"
-                [href]="project?.github"
-                icon="heroGlobeAltSolid"
-                iconPosition="left"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                GitHub Repo
-              </app-button>
+        <div class="mt-8">
+          <h4 class="mb-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-text-muted">Technologies</h4>
+          <div class="flex flex-wrap gap-2">
+            @for (tech of project?.tech; track tech) {
+              <app-tag>{{ tech }}</app-tag>
             }
           </div>
         </div>
+
+        @if (project?.github) {
+          <div class="mt-8">
+            <app-button
+              variant="primary"
+              [href]="project?.github"
+              icon="heroGlobeAltSolid"
+              iconPosition="left"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub Repo
+            </app-button>
+          </div>
+        }
       </div>
     </div>
   `
@@ -121,39 +108,35 @@ export class ProjectModalComponent implements AfterViewInit {
   @ViewChild('modalContainer') modalContainer!: ElementRef<HTMLDivElement>;
   @ViewChild('closeButton') closeButton!: ElementRef<HTMLButtonElement>;
 
-  @HostListener('document:keydown.escape', ['$event'])
-  onEscapeKey(event: any) {
+  @HostListener('document:keydown.escape')
+  onEscapeKey() {
     this.close.emit();
   }
 
   @HostListener('document:keydown.tab', ['$event'])
-  onTabKey(event: any) {
+  onTabKey(event: Event) {
+    const keyboardEvent = event as KeyboardEvent;
     if (!this.modalContainer) return;
+
     const focusableElements = this.modalContainer.nativeElement.querySelectorAll<HTMLElement>(
       'a[href], button, input, textarea, select, [tabindex]:not([tabindex="-1"])'
     );
+
     if (focusableElements.length === 0) return;
+
     const firstEl = focusableElements[0];
     const lastEl = focusableElements[focusableElements.length - 1];
 
-    if (event.shiftKey) {
-      if (document.activeElement === firstEl) {
-        lastEl.focus();
-        event.preventDefault();
-      }
-    } else {
-      if (document.activeElement === lastEl) {
-        firstEl.focus();
-        event.preventDefault();
-      }
+    if (keyboardEvent.shiftKey && document.activeElement === firstEl) {
+      lastEl.focus();
+      keyboardEvent.preventDefault();
+    } else if (!keyboardEvent.shiftKey && document.activeElement === lastEl) {
+      firstEl.focus();
+      keyboardEvent.preventDefault();
     }
   }
 
   ngAfterViewInit() {
-    setTimeout(() => {
-      if (this.closeButton) {
-        this.closeButton.nativeElement.focus();
-      }
-    }, 100);
+    setTimeout(() => this.closeButton?.nativeElement.focus(), 100);
   }
 }

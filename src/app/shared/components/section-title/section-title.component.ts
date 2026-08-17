@@ -4,22 +4,33 @@ import { Component, Input } from '@angular/core';
   selector: 'app-section-title',
   standalone: true,
   template: `
-    <div class="mb-12 text-center">
-      <h2 class="text-3xl font-bold tracking-tight text-heading sm:text-4xl">
+    <div
+      class="mb-12"
+      [class.text-center]="align === 'center'"
+      [class.text-left]="align === 'left'"
+    >
+      @if (eyebrow) {
+        <p class="mb-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-accent">
+          {{ eyebrow }}
+        </p>
+      }
+      <h2 class="font-display text-[36px] font-bold leading-tight text-text-primary md:text-[40px]">
         {{ title }}
       </h2>
       @if (subtitle) {
-        <p class="mx-auto mt-4 max-w-2xl text-base text-muted md:text-lg">
+        <p
+          class="mt-4 max-w-2xl text-[16px] leading-7 text-text-secondary"
+          [class.mx-auto]="align === 'center'"
+        >
           {{ subtitle }}
         </p>
       }
-      <div class="mt-4 flex justify-center">
-        <div class="h-1.5 w-16 rounded bg-gradient-to-r from-primary to-accent"></div>
-      </div>
     </div>
   `,
 })
 export class SectionTitleComponent {
   @Input({ required: true }) title!: string;
   @Input() subtitle?: string;
+  @Input() eyebrow?: string;
+  @Input() align: 'left' | 'center' = 'center';
 }

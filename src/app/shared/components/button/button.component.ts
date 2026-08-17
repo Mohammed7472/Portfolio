@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Attribute, Component, Input } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { NgIcon } from '@ng-icons/core';
 
@@ -51,21 +51,23 @@ export class ButtonComponent {
   @Input() target?: string;
   @Input() rel?: string;
 
+  constructor(@Attribute('class') private readonly hostClass = '') {}
+
   get classes(): string {
-    const base = 'inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:pointer-events-none cursor-pointer';
-    
+    const base = 'inline-flex items-center justify-center rounded-[10px] font-semibold transition-all duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-border-glow disabled:pointer-events-none disabled:opacity-50';
+
     const sizes = {
-      sm: 'px-4 py-2 text-xs',
-      md: 'px-5 py-2.5 text-sm',
-      lg: 'px-7 py-3.5 text-base'
+      sm: 'px-4 py-2 text-[13px]',
+      md: 'px-7 py-3 text-[15px]',
+      lg: 'px-9 py-3.5 text-[16px]'
     };
 
     const variants = {
-      primary: 'bg-primary text-white hover:brightness-110 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30',
-      secondary: 'bg-secondary text-white hover:brightness-110 shadow-sm',
-      outline: 'border border-primary text-primary hover:bg-primary/5'
+      primary: 'border border-primary bg-primary text-white shadow-[0_0_0_var(--color-primary-glow)] hover:-translate-y-0.5 hover:bg-primary-muted hover:shadow-[0_8px_24px_var(--color-primary-glow)]',
+      secondary: 'border border-border bg-bg-elevated text-text-primary hover:-translate-y-0.5 hover:border-primary',
+      outline: 'border border-border bg-transparent text-text-primary hover:-translate-y-0.5 hover:border-primary'
     };
 
-    return `${base} ${sizes[this.size]} ${variants[this.variant]}`;
+    return `${base} ${sizes[this.size]} ${variants[this.variant]} ${this.hostClass}`.trim();
   }
 }

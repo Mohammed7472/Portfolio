@@ -1,100 +1,139 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { PORTFOLIO } from '../../core/portfolio.constants';
 import { ButtonComponent } from '../../shared/components/button/button.component';
-import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
+import { heroEntrance } from '../../shared/animations/animations';
 
 @Component({
   selector: 'app-hero',
   standalone: true,
   imports: [ButtonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [
-    trigger('heroEntrance', [
-      transition(':enter', [
-        query('.animate-item', [
-          style({ opacity: 0, transform: 'translateY(24px)' }),
-          stagger(120, [
-            animate('800ms cubic-bezier(0.16, 1, 0.3, 1)', style({ opacity: 1, transform: 'translateY(0)' }))
-          ])
-        ], { optional: true })
-      ])
-    ])
-  ],
+  animations: [heroEntrance],
   styles: [`
-    .grid-bg {
-      background-color: #0B1120;
-      background-image: 
-        radial-gradient(rgba(56, 189, 248, 0.04) 1.2px, transparent 1.2px);
-      background-size: 24px 24px;
+    .hero-bg {
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(59, 130, 246, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+        var(--color-bg-base);
     }
-    .cursor-blink {
-      border-right: 3px solid #38BDF8;
-      animation: blink 0.75s step-end infinite;
+
+    .badge-float {
+      animation: float-badge 8s ease-in-out infinite;
     }
-    @keyframes blink {
-      from, to { border-color: transparent }
-      50% { border-color: #38BDF8; }
+
+    .badge-one { left: 12%; top: 28%; }
+    .badge-two { right: 14%; top: 34%; }
+    .badge-three { left: 18%; bottom: 24%; }
+    .badge-four { right: 20%; bottom: 18%; }
+
+    .badge-float:nth-child(2) {
+      animation-delay: 1.2s;
     }
-    .typing-text {
-      display: inline-block;
-      overflow: hidden;
-      white-space: nowrap;
-      animation: typing 2.5s steps(22, end) forwards;
-      animation-delay: 0.5s;
-      width: 0;
+
+    .badge-float:nth-child(3) {
+      animation-delay: 2.1s;
     }
-    @keyframes typing {
-      from { width: 0 }
-      to { width: 100% }
+
+    .badge-float:nth-child(4) {
+      animation-delay: 3s;
+    }
+
+    .scroll-indicator {
+      animation: scroll-fade 700ms ease 1000ms both, scroll-bounce 2.3s ease-in-out 1200ms infinite;
+    }
+
+    @keyframes float-badge {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-12px);
+      }
+    }
+
+    @keyframes scroll-fade {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes scroll-bounce {
+      0%, 100% {
+        transform: translateX(-50%) translateY(0);
+      }
+      50% {
+        transform: translateX(-50%) translateY(8px);
+      }
     }
   `],
   template: `
     <section
       id="home"
-      class="grid-bg relative flex min-h-screen items-center justify-center overflow-hidden py-20"
+      class="hero-bg relative flex min-h-[100dvh] items-center justify-center overflow-hidden px-4 pt-24"
     >
-      <!-- Background Ambient Glows -->
-      <div class="absolute top-1/4 left-1/4 -z-10 h-[300px] w-[300px] rounded-full bg-primary/10 blur-[100px] animate-pulse-glow"></div>
-      <div class="absolute bottom-1/4 right-1/4 -z-10 h-[350px] w-[350px] rounded-full bg-accent/5 blur-[120px] animate-pulse-glow animate-float-delayed"></div>
+      <div class="pointer-events-none absolute inset-0 hidden md:block" aria-hidden="true">
+        @for (badge of techBadges; track badge.label) {
+          <span
+            class="badge-float absolute rounded-full border border-border bg-bg-elevated px-3 py-1 text-[12px] font-medium text-text-secondary opacity-70"
+            [class.badge-one]="$index === 0"
+            [class.badge-two]="$index === 1"
+            [class.badge-three]="$index === 2"
+            [class.badge-four]="$index === 3"
+          >
+            {{ badge.label }}
+          </span>
+        }
+      </div>
 
-      <div 
-        class="mx-auto max-w-4xl px-6 text-center z-10"
-        [@heroEntrance]="true"
-      >
-        <span class="animate-item inline-flex items-center gap-1.5 rounded-full bg-accent/10 px-3.5 py-1 text-xs font-semibold text-accent">
-          <span class="h-1.5 w-1.5 rounded-full bg-accent animate-ping"></span>
-          {{ portfolio.location }}
-        </span>
-
-        <h1 class="animate-item mt-6 text-4xl font-extrabold tracking-tight text-white sm:text-6xl md:text-7xl">
-          Hi, I'm <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">{{ portfolio.name }}</span>
-        </h1>
-
-        <div class="animate-item mt-4 h-12 flex items-center justify-center">
-          <p class="text-xl font-bold text-accent sm:text-2xl cursor-blink typing-text">
-            Backend (.NET) Developer
-          </p>
+      <div class="portfolio-container relative z-10 text-center" [@heroEntrance]="true">
+        <div class="hero-reveal mx-auto inline-flex items-center rounded-full border border-border-glow bg-primary-glow px-4 py-1.5 text-[12px] font-semibold text-primary">
+          {{ portfolio.availability }}
         </div>
 
-        <p class="animate-item mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
+        <h1 class="hero-reveal mx-auto mt-7 max-w-5xl font-display text-[clamp(48px,8vw,80px)] font-extrabold leading-none text-text-primary">
+          {{ portfolio.name }}
+        </h1>
+
+        <p class="hero-reveal mt-4 font-display text-[clamp(28px,5vw,48px)] font-bold leading-tight gradient-text">
+          {{ portfolio.title }}
+        </p>
+
+        <p class="hero-reveal mx-auto mt-6 max-w-xl text-[18px] leading-8 text-text-secondary">
           {{ portfolio.tagline }}
         </p>
 
-        <div class="animate-item mt-10 flex flex-wrap items-center justify-center gap-4">
+        <div class="hero-reveal mt-10 flex flex-wrap items-center justify-center gap-3">
           <app-button variant="primary" href="#projects">
             View Projects
           </app-button>
-          <app-button variant="outline" [href]="portfolio.cvUrl" class="!border-white/20 !text-white hover:!bg-white/10" target="_blank" rel="noopener noreferrer">
+          <app-button variant="outline" [href]="portfolio.cvUrl" target="_blank" rel="noopener noreferrer">
             Download CV
           </app-button>
-          <app-button variant="outline" href="#contact" class="!border-white/20 !text-white hover:!bg-white/10">
+          <app-button variant="outline" href="#contact">
             Contact Me
           </app-button>
         </div>
       </div>
+
+      <a
+        href="#about"
+        class="scroll-indicator absolute bottom-8 left-1/2 flex h-9 w-9 -translate-x-1/2 items-center justify-center text-text-muted"
+        aria-label="Scroll to about section"
+      >
+        <span class="h-3 w-3 rotate-45 border-b-2 border-r-2 border-current"></span>
+      </a>
     </section>
   `,
 })
 export class HeroComponent {
   protected readonly portfolio = PORTFOLIO;
+  protected readonly techBadges = [
+    { label: 'ASP.NET Core' },
+    { label: '.NET' },
+    { label: 'Redis' },
+    { label: 'Docker' },
+  ];
 }
