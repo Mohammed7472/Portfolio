@@ -11,59 +11,57 @@ import { PORTFOLIO } from '../../core/portfolio.constants';
   animations: [
     trigger('slideDown', [
       transition(':enter', [
-        style({ height: 0, opacity: 0 }),
-        animate('250ms ease-out', style({ height: '*', opacity: 1 }))
+        style({ opacity: 0, transform: 'translateY(-12px)' }),
+        animate('180ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
       ]),
       transition(':leave', [
-        animate('200ms ease-in', style({ height: 0, opacity: 0 }))
+        animate('150ms ease-in', style({ opacity: 0, transform: 'translateY(-12px)' }))
       ])
     ])
   ],
+  styles: [`
+    header {
+      background: rgba(7, 11, 20, 0.85);
+      backdrop-filter: blur(20px);
+    }
+  `],
   template: `
-    <header
-      class="fixed inset-x-0 top-0 z-50 transition-all duration-350"
-      [class.glass]="scrolled()"
-      [class.py-3]="scrolled()"
-      [class.py-5]="!scrolled()"
-    >
-      <div class="mx-auto flex max-w-6xl items-center justify-between px-6">
-        <a
-          href="#home"
-          class="group flex items-center gap-2 font-mono text-lg font-semibold text-heading"
-          (click)="closeMenu()"
-        >
-          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary/20">
-            <ng-icon name="heroCommandLine" size="20" />
+    <header class="fixed inset-x-0 top-0 z-50 h-16 border-b border-border">
+      <div class="portfolio-container flex h-full items-center justify-between">
+        <a href="#home" class="flex items-center gap-3" (click)="closeMenu()">
+          <span class="flex h-8 min-w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary to-violet px-3 text-[14px] font-bold text-white">
+            MA
           </span>
-          MA<span class="text-primary">.</span>
+          <span class="hidden text-[15px] font-medium text-text-primary sm:inline">
+            Mohammed Ashraf
+          </span>
         </a>
 
-        <!-- Desktop Links -->
-        <nav class="hidden items-center gap-1 md:flex" aria-label="Main navigation">
+        <nav class="hidden h-full items-center gap-6 md:flex" aria-label="Main navigation">
           @for (link of navLinks; track link.href) {
             <a
               [href]="link.href"
-              class="rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200"
-              [class.text-primary]="activeSection() === link.href"
-              [class.bg-primary/10]="activeSection() === link.href"
-              [class.text-muted]="activeSection() !== link.href"
-              [class.hover:text-heading]="activeSection() !== link.href"
+              class="flex h-full items-center border-b-2 px-0 text-[14px] font-medium transition-colors duration-150"
+              [class.border-primary]="activeSection() === link.href"
+              [class.border-transparent]="activeSection() !== link.href"
+              [class.text-text-primary]="activeSection() === link.href"
+              [class.text-text-secondary]="activeSection() !== link.href"
+              [class.hover:text-text-primary]="activeSection() !== link.href"
             >
               {{ link.label }}
             </a>
           }
           <a
             href="#contact"
-            class="ml-3 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-all hover:shadow-lg hover:shadow-primary/20 hover:brightness-110 cursor-pointer"
+            class="rounded-[10px] border border-primary px-4 py-2 text-[14px] font-semibold text-primary transition-all duration-150 hover:bg-primary hover:text-white"
           >
             Hire Me
           </a>
         </nav>
 
-        <!-- Mobile Menu Toggle Button -->
         <button
           type="button"
-          class="flex h-10 w-10 items-center justify-center rounded-lg text-heading md:hidden focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer"
+          class="flex h-10 w-10 items-center justify-center rounded-[10px] text-text-primary transition-colors hover:bg-bg-hover md:hidden"
           [attr.aria-expanded]="menuOpen()"
           aria-label="Toggle menu"
           (click)="toggleMenu()"
@@ -71,49 +69,55 @@ import { PORTFOLIO } from '../../core/portfolio.constants';
           <ng-icon [name]="menuOpen() ? 'heroXMark' : 'heroBars3'" size="24" />
         </button>
       </div>
+    </header>
 
-      <!-- Mobile Dropdown Menu -->
-      @if (menuOpen()) {
-        <nav
-          class="glass mx-4 mt-2 rounded-xl p-4 md:hidden"
-          aria-label="Mobile navigation"
-          @slideDown
-        >
-          @for (link of navLinks; track link.href) {
-            <a
-              [href]="link.href"
-              class="block rounded-lg px-4 py-3 text-sm font-medium transition-colors"
-              [class.text-primary]="activeSection() === link.href"
-              [class.bg-primary/10]="activeSection() === link.href"
-              [class.text-muted]="activeSection() !== link.href"
-              (click)="closeMenu()"
-            >
-              {{ link.label }}
-            </a>
-          }
+    @if (menuOpen()) {
+      <button
+        type="button"
+        class="fixed inset-0 z-40 bg-black/60 md:hidden"
+        aria-label="Close navigation menu"
+        (click)="closeMenu()"
+      ></button>
+      <nav
+        class="fixed inset-x-4 top-20 z-50 rounded-[16px] border border-border bg-bg-elevated p-3 shadow-2xl md:hidden"
+        aria-label="Mobile navigation"
+        @slideDown
+      >
+        @for (link of navLinks; track link.href) {
           <a
-            href="#contact"
-            class="mt-2 block rounded-lg bg-primary px-4 py-3 text-center text-sm font-semibold text-white"
+            [href]="link.href"
+            class="flex min-h-12 items-center rounded-[10px] px-4 text-[15px] font-medium transition-colors"
+            [class.bg-bg-hover]="activeSection() === link.href"
+            [class.text-text-primary]="activeSection() === link.href"
+            [class.text-text-secondary]="activeSection() !== link.href"
             (click)="closeMenu()"
           >
-            Hire Me
+            {{ link.label }}
           </a>
-        </nav>
-      }
-    </header>
+        }
+        <a
+          href="#contact"
+          class="mt-2 flex min-h-12 items-center justify-center rounded-[10px] border border-primary text-[15px] font-semibold text-primary transition-colors hover:bg-primary hover:text-white"
+          (click)="closeMenu()"
+        >
+          Hire Me
+        </a>
+      </nav>
+    }
   `,
 })
 export class NavbarComponent implements OnInit, OnDestroy {
   protected readonly navLinks = PORTFOLIO.navLinks;
   protected menuOpen = signal(false);
-  protected scrolled = signal(false);
   protected activeSection = signal('#home');
 
   private observer!: IntersectionObserver;
 
   @HostListener('window:scroll')
   onScroll(): void {
-    this.scrolled.set(window.scrollY > 20);
+    if (this.menuOpen()) {
+      this.closeMenu();
+    }
   }
 
   ngOnInit() {
@@ -121,9 +125,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.observer) {
-      this.observer.disconnect();
-    }
+    this.observer?.disconnect();
   }
 
   toggleMenu(): void {
@@ -135,23 +137,19 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   private setupScrollspy(): void {
-    const options = {
-      root: null,
-      rootMargin: '-30% 0px -60% 0px', // Trigger when section occupies center/top of viewport
-      threshold: 0
-    };
-
     this.observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           this.activeSection.set(`#${entry.target.id}`);
         }
       });
-    }, options);
+    }, {
+      rootMargin: '-30% 0px -55% 0px',
+      threshold: 0
+    });
 
     this.navLinks.forEach((link) => {
-      const id = link.href.slice(1);
-      const element = document.getElementById(id);
+      const element = document.getElementById(link.href.slice(1));
       if (element) {
         this.observer.observe(element);
       }
