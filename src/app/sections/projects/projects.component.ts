@@ -41,6 +41,31 @@ import { NgIcon } from '@ng-icons/core';
     .project-card:nth-child(3) {
       transition-delay: 240ms;
     }
+
+    .project-icon {
+      display: inline-flex;
+      height: 34px;
+      width: 34px;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      border: 1px solid var(--color-border-glow);
+      border-radius: 10px;
+      background: linear-gradient(145deg, var(--color-primary-glow), var(--color-bg-subtle));
+      box-shadow: 0 0 20px var(--color-primary-glow);
+    }
+
+    .project-icon span {
+      display: block;
+      width: 3px;
+      border-radius: 999px;
+      background: linear-gradient(to bottom, var(--color-accent), var(--color-primary));
+    }
+
+    .project-icon span:nth-child(1) { height: 10px; }
+    .project-icon span:nth-child(2) { height: 17px; }
+    .project-icon span:nth-child(3) { height: 13px; }
   `],
   template: `
     <section
@@ -68,7 +93,8 @@ import { NgIcon } from '@ng-icons/core';
                   </span>
 
                   <div class="pr-10">
-                    <h3 class="text-[20px] font-bold leading-snug text-text-primary">
+                    <h3 class="flex items-center gap-3 pr-8 text-[20px] font-bold leading-snug text-text-primary">
+                      <span class="project-icon" aria-hidden="true"><span></span><span></span><span></span></span>
                       {{ project.name }}
                     </h3>
                     <p class="mt-3 line-clamp-3 text-[14px] leading-6 text-text-secondary">
